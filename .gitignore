@@ -1,0 +1,15 @@
+node_modules/
+dist/
+data/
+backups/
+models/
+map-data/
+runtime/
+*.sqlite*
+*.db
+*.log
+*.pid
+*.dmg
+*.app/
+.env*
+.DS_Store
