@@ -1,0 +1,9 @@
+{
+  "name": "salesroute-planner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first multi-salesperson open-route planning",
+  "scripts": { "test": "node --test" },
+  "engines": { "node": ">=22" }
+}
