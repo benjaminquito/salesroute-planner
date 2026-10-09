@@ -19,7 +19,7 @@
 6. Allow a manager to inspect, adjust, recalculate and approve a plan.
 7. Print each salesperson's visit sequence and schedule.
 
-Manager approval, customer imports, authentication, reports and packaging are planned application features, not completed capabilities of this initial repository. The existing church-specific fields and 15-person Group rules do not apply to this business project.
+Version 0.2 includes customer/team entry, JSON workspace imports, local storage, draft schedules and printing. Manager approval, CSV/Excel imports, authentication, automatic address lookup, offline road routing, a geographic map and packaging remain planned. The existing church-specific fields and 15-person Group rules do not apply to this business project.
 
 ## Planning core implemented
 

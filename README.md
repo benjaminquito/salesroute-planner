@@ -1,23 +1,55 @@
 # SalesRoute Planner
 
-Local-first customer assignment and route planning for multiple salespeople. Each salesperson starts from home or office and may finish at the last customer; no return trip is required.
+A local browser application for assigning customer visits across multiple salespeople. Each person starts at home or an office and finishes at the last customer, with no mandatory return trip.
 
-## Current status
+## Version 0.2 — working local prototype
 
-This is an initial business project, separate from Household Connect. It contains a tested route-planning core and agreed product requirements. It is **not yet an installable business application**.
+- Customer entry, editing and search; visit lengths, appointment windows and fixed salesperson assignments.
+- Salesperson entry and editing, separate starting locations, working hours and visit limits.
+- Draft route generation, explicit unassigned visits and printable schedules.
+- Local disk storage, JSON workspace import/export and a previous-save recovery file.
+- Directional travel-time JSON imports or explicitly labelled straight-line test estimates.
+- A fictional six-customer, two-salesperson example, loaded only when requested.
 
-The core accepts customer locations, multiple starting locations, shift times, visit durations, appointment windows, optional visit limits, fixed salesperson assignments and a supplied travel-time function. It produces draft visit sequences, schedules and explicit unassigned visits. A greedy insertion heuristic reduces incremental travel; it does not guarantee an optimal solution or globally balanced territories.
+This is not yet a production or installable desktop application. Login, manager approval, automatic address lookup, offline road routing, a geographic map, CSV/Excel import and desktop packaging are still planned. Routes remain drafts; this version does not claim approval enforcement. It is intended for one trusted user on one computer.
 
-No customer records, accounts, passwords, household database, AI models or map databases are included. GitHub stores source code; it does not host or synchronize the local business database.
+## Run
 
-## Run tests
+Install Node.js 22 or later. From this folder:
 
-Use Node.js 22 or later and run `npm test`. No external dependencies are needed for the planning core. Tests use fictional coordinates and artificial travel times.
+```sh
+npm start
+```
 
-## Travel data
+Open **http://127.0.0.1:47840**. Keep the terminal running; stop with Ctrl+C. No package installation or third-party AI account is needed. The server listens on loopback only and accepts only its own host and origin. It is not a shared network service. Do not expose it through a proxy or public tunnel.
 
-`src/planner.mjs` requires a travel-time function returning nonnegative minutes, or Infinity for an unreachable leg. It supports directional/asymmetric travel. All times are minutes on one planning-day timeline; a visit must finish within both its appointment window and the salesperson's shift. Travel times are static, not live traffic estimates.
+Use **Overview → Load fictional example**, then **Routes & schedules → Generate draft routes** to try it. Change a customer's assigned salesperson to move their visit, then regenerate. Editing or importing data clears the saved draft to prevent printing an outdated schedule.
 
-Offline road routing, address lookup, map display, customer uploads, login, manager approval storage, printable reports and desktop packaging remain to be implemented. The engine marks plans as drafts; approval enforcement belongs to the future application. The repository does not present straight-line distances as driving routes.
+## Travel assumptions
 
-See [product requirements](docs/REQUIREMENTS.md) for the agreed direction.
+Addresses are descriptive only: enter confirmed latitude and longitude. Test estimates use great-circle distance at the selected speed; they do not follow roads, account for traffic or provide driving directions. Supplied travel times are directional and static. Download the template from Routes & schedules, fill in minutes for each leg and import it. Missing or `null` legs are unreachable. There is no inferred reverse leg.
+
+```json
+[
+  { "from": "S-DEMO-1", "to": "C-DEMO-1", "minutes": 12 },
+  { "from": "C-DEMO-1", "to": "C-DEMO-2", "minutes": 8 }
+]
+```
+
+Changing a starting or customer address/coordinate removes all supplied legs touching that record. Re-import updated times before planning. All times are on one day; each visit must finish within both its appointment window and the salesperson's shift. Overnight scheduling is not supported. The prototype limits input to 100 customers and 20 salespeople.
+
+The core uses greedy feasible insertion. It does not prove an optimal solution or globally balanced territories and can leave visits unassigned when another arrangement would work. Inspect every unassigned visit and route before operational use.
+
+## Storage and recovery
+
+The default workspace is `data/workspace.json`, separate from Household Connect. Override with `SALESROUTE_DATA_DIR`; change the local port with `PORT`. Writes use a temporary file and atomic rename. The immediately previous save is retained in `data/workspace.json.previous`. Stop the server before restoring that file. Export workspace copies regularly; the previous-save file is not a full backup history. Workspace imports replace the current workspace after confirmation and are validated before saving. Open windows use revision checks to reject stale saves.
+
+No accounts, customer database, passwords, Household Connect data, AI models or map databases are committed to GitHub. The app makes no external network requests. Local files and exported workspaces are not encrypted; protect them with the computer's own account and disk security. There is no login in this prototype.
+
+## Tests
+
+```sh
+npm test
+```
+
+Nine automated tests cover route constraints, asymmetric travel, unassigned visits, input validation, save conflicts, host/origin checks, persistence, restart and draft invalidation. All examples use fictional data. See [product requirements](docs/REQUIREMENTS.md) for the intended final workflow.
